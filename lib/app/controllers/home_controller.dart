@@ -7,16 +7,17 @@ enum StopWatchMode { countDown, countUp }
 class HomeController {
   Timer _timer;
   StopWatchMode _mode = StopWatchMode.countUp;
+  final _oneSecond = const Duration(seconds: 1);
+
+  final _isStarted = RxNotifier(false);
+  bool get isStarted => _isStarted.value;
 
   final _seconds = RxNotifier<int>(0);
   final _minutes = RxNotifier<int>(0);
   final _hours = RxNotifier<int>(0);
-
   int get seconds => _seconds.value;
   int get minutes => _minutes.value;
   int get hours => _hours.value;
-
-  final _oneSecond = const Duration(seconds: 1);
 
   final _isRunning = RxNotifier(false);
   bool get isRunning => _isRunning.value;
@@ -52,7 +53,7 @@ class HomeController {
   void pause() {
     if (isRunning) {
       _isRunning.value = false;
-      _timer.cancel();      
+      _timer.cancel();
     } else {
       _isRunning.value = true;
       _timer = new Timer.periodic(_oneSecond, callback);
@@ -60,24 +61,29 @@ class HomeController {
   }
 
   void stop() {
-    if (isRunning) {
-      _isRunning.value = false;
-      _timer.cancel();      
+    bool isToStart = isRunning;
+
+    _isRunning.value = false;
+    _timer.cancel();
+    reset();
+
+    if(isToStart) {
+      start();
     }
   }
 
   void start() {
     if (!isRunning) {
-      _isRunning.value = true;    
+      _isRunning.value = true;
       _timer = new Timer.periodic(_oneSecond, callback);
+      _isStarted.value = true;
     }
   }
 
   void callback(Timer timer) {
     if (_mode == StopWatchMode.countUp) {
       _countUpLogic();
-    }
-    else {
+    } else {
       _countDownLogic();
     }
   }
@@ -86,5 +92,6 @@ class HomeController {
     _hours.value = 0;
     _seconds.value = 0;
     _minutes.value = 0;
+    _isStarted.value = false;
   }
 }

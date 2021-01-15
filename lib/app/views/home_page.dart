@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: 40),
           RxBuilder(
             builder: (_) => Center(
-              child: (!controller.isRunning)
+              child: (!controller.isRunning && !controller.isStarted)
                   ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -42,20 +42,25 @@ class _HomePageState extends State<HomePage> {
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        GestureDetector(
-                          onTap: controller.pause,
-                          child: Icon(
-                            Icons.pause,
-                            color: Theme.of(context).primaryColor,
-                            size: 33,
+                        RxBuilder(
+                          builder: (_) => GestureDetector(
+                            onTap: controller.pause,
+                            child: Icon(
+                              (controller.isRunning)
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                              color: Theme.of(context).primaryColor,
+                              size: 30,
+                            ),
                           ),
                         ),
+                        SizedBox(width: 20),
                         GestureDetector(
                           onTap: controller.stop,
                           child: Icon(
                             Icons.stop,
                             color: Theme.of(context).primaryColor,
-                            size: 30,
+                            size: 35,
                           ),
                         ),
                       ],
